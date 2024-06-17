@@ -34,7 +34,7 @@ KeypadPassword project is an extension of ReadKeypad project. In this project, a
 
 The user is then asked to enter their password. The password entered by the user is checked against the default password. If it is correct, then it displays "Correct password" else it displays "You have entered incorrect password. Please try again.". 
 
-## Setting up header file
+## Header file
 ```
 typedef struct {
 	uint32_t gpioa_en: 1;
@@ -64,5 +64,51 @@ typedef struct {
 	uint32_t reserved_5: 1;
 } RCC_AHB1ENR_t;
 ```
+The header file "main.h" contains 5 structures. They are defined by using bit fields like above. Each member has width size specified according to the datasheet. 
 
+## Main file
+1. Setting address of registers
+```
+RCC_AHB1ENR_t *pClkCtrlReg = (RCC_AHB1ENR_t *) 0x40023830;
+GPIOx_MODER_t *pPortDModeReg = (GPIOx_MODER_t *) 0x40020C00;
+GPIOx_PUPDR_t *pPortDPUPDReg = (GPIOx_PUPDR_t *) 0x40020C0C;
+GPIOx_IDR_t *pPortDInReg = (GPIOx_IDR_t *) 0x40020C10;
+GPIOx_ODR_t *pPortDOutReg = (GPIOx_ODR_t *) 0x40020C14;
+```
+2. Enabling GPIO Port D clock register
+```
+pClkCtrlReg->gpiod_en = 1;
+```
+3. Configuring row pins as output
+```
+pPortDModeReg->pin_0 = 0;
+pPortDModeReg->pin_1 = 0;
+pPortDModeReg->pin_2 = 0;
+pPortDModeReg->pin_3 = 0;
 
+pPortDModeReg->pin_0 = 0x01;
+pPortDModeReg->pin_1 = 0x01;
+pPortDModeReg->pin_2 = 0x01;
+pPortDModeReg->pin_3 = 0x01;
+```
+4. Configuring column pins as input
+```
+pPortDModeReg->pin_8 = 0;
+pPortDModeReg->pin_9 = 0;
+pPortDModeReg->pin_10 = 0;
+pPortDModeReg->pin_11 = 0;
+```
+5. Enable pull-up registers for column pins
+```
+pPortDPUPDReg->pin_8 = 0;
+pPortDPUPDReg->pin_9 = 0;
+pPortDPUPDReg->pin_10 = 0;
+pPortDPUPDReg->pin_11 = 0;
+
+pPortDPUPDReg->pin_8 = 0x01;
+pPortDPUPDReg->pin_9 = 0x01;
+pPortDPUPDReg->pin_10 = 0x01;
+pPortDPUPDReg->pin_11 = 0x01;
+```
+
+The above code snippets are used to set the respective registers
